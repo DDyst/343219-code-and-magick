@@ -1,6 +1,7 @@
 # Учебный проект «Код и Магия» [![Build status][travis-image]][travis-url]
 
 * Студент: [Кирилл Кутюев](https://up.htmlacademy.ru/javascript/10/user/343219).
+* Наставник: [Александр Большов](https://up.htmlacademy.ru/javascript/10/user/179111).
 
 ---
 
