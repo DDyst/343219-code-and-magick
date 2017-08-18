@@ -1,44 +1,78 @@
 'use strict';
 
-window.renderStatistics = function (ctx, names, times) {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(110, 20, 420, 270);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(100, 10, 420, 270);
+var shadow = {
+  color: 'rgba(0, 0, 0, 0.7)',
+  x: 110,
+  y: 20,
+  width: 420,
+  height: 270
+};
 
-  ctx.font = '16px PT Mono';
-  ctx.textBaseline = 'hanging';
-  ctx.fillStyle = '#000000';
-  ctx.fillText('Ура! Вы победили!', 120, 30);
-  ctx.fillText('Список результатов:', 120, 48);
+var cloud = {
+  color: '#ffffff',
+  x: 100,
+  y: 10,
+  width: 420,
+  height: 270
+};
 
+var text = {
+  indent: 6,
+  color: '#000000',
+  size: 16,
+  font: 'PT Mono',
+  wordsBaseline: 'hanging',
+  numbersBaseline: 'bottom',
+  headlineX: 120,
+  headline1Y: 30,
+  headline2Y: 48,
+  headline1: 'Ура! Вы победили!',
+  headline2: 'Список результатов:'
+};
+
+var histogram = {
+  height: 150,
+  x: 140,
+  y: 100,
+  barWidth: 40,
+  barIndent: 50,
+  yourBarColor: 'rgba(255, 0, 0, 1)',
+  othersBarColor: 'rgba(0, 0, 255, ', // если сразу добавить в строку Math.random(), то прозрачность будет одинакова для всех колонок других игроков
+  yourBarName: 'Вы'
+};
+
+var getMaxTime = function (times) {
   var max = -1;
-
   for (var i = 0; i < times.length; i++) {
     var time = times[i];
     if (time > max) {
       max = time;
     }
   }
+  return max;
+};
 
-  var histogramHeight = 150;
-  var step = histogramHeight / max;
-  var columnWidth = 40;
-  var columnIndent = 50;
-  var initialX = 140;
-  var initialY = 100;
-  var textIndent = 6;
+window.renderStatistics = function (ctx, names, times) {
+  ctx.fillStyle = shadow.color;
+  ctx.fillRect(shadow.x, shadow.y, shadow.width, shadow.height);
+  ctx.fillStyle = cloud.color;
+  ctx.fillRect(cloud.x, cloud.y, cloud.width, cloud.height);
 
-  for (i = 0; i < times.length; i++) {
-    ctx.fillStyle = 'rgba(0, 0, 255, ' + Math.random() + ')';
-    if (names[i] === 'Вы') {
-      ctx.fillStyle = 'rgba(255, 0, 0, 1)';
-    }
-    ctx.fillRect(initialX + (columnWidth + columnIndent) * i, initialY + (histogramHeight - times[i] * step), columnWidth, times[i] * step);
-    ctx.fillStyle = '#000000';
-    ctx.textBaseline = 'hanging';
-    ctx.fillText(names[i], initialX + (columnWidth + columnIndent) * i, initialY + histogramHeight + textIndent);
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(Math.round(times[i]), initialX + (columnWidth + columnIndent) * i, initialY + (histogramHeight - times[i] * step) - textIndent);
+  ctx.font = text.size + ' ' + text.font;
+  ctx.textBaseline = text.wordsBaseline;
+  ctx.fillStyle = text.color;
+  ctx.fillText(text.headline1, text.headlineX, text.headline1Y);
+  ctx.fillText(text.headline2, text.headlineX, text.headline2Y);
+
+  var step = histogram.height / getMaxTime(times);
+
+  for (var i = 0; i < times.length; i++) {
+    ctx.fillStyle = (names[i] === histogram.yourBarName) ? histogram.yourBarColor : histogram.othersBarColor + Math.random() + ')';
+    ctx.fillRect(histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - times[i] * step), histogram.barWidth, times[i] * step);
+    ctx.fillStyle = text.color;
+    ctx.textBaseline = text.wordsBaseline;
+    ctx.fillText(names[i], histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + histogram.height + text.indent);
+    ctx.textBaseline = text.numbersBaseline;
+    ctx.fillText(Math.round(times[i]), histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - times[i] * step) - text.indent);
   }
 };
