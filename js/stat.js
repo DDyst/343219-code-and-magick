@@ -1,5 +1,8 @@
+// Рендеринг окна статистики
+
 'use strict';
 
+// Объект с настройками для отрисовки тени
 var shadow = {
   color: 'rgba(0, 0, 0, 0.7)',
   x: 110,
@@ -8,6 +11,7 @@ var shadow = {
   height: 270
 };
 
+// Объект с настройками для отрисовки облака
 var cloud = {
   color: '#ffffff',
   x: 100,
@@ -16,6 +20,7 @@ var cloud = {
   height: 270
 };
 
+// Объект с настройками для отрисовки текста
 var text = {
   indent: 6,
   color: '#000000',
@@ -30,6 +35,7 @@ var text = {
   headline2: 'Список результатов:'
 };
 
+// Объект с настройками для отрисовки гистограммы
 var histogram = {
   height: 150,
   x: 140,
@@ -37,21 +43,16 @@ var histogram = {
   barWidth: 40,
   barIndent: 50,
   yourBarColor: 'rgba(255, 0, 0, 1)',
-  othersBarColor: 'rgba(0, 0, 255, ', // если сразу добавить в строку Math.random(), то прозрачность будет одинакова для всех колонок других игроков
+  othersBarColor: 'rgba(0, 0, 255, ',
   yourBarName: 'Вы'
 };
 
+// Функция нахождения максимального элемента массива
 var getMaxTime = function (times) {
-  var max = -1;
-  for (var i = 0; i < times.length; i++) {
-    var time = times[i];
-    if (time > max) {
-      max = time;
-    }
-  }
-  return max;
+  return Math.max.apply(null, times);
 };
 
+// Функция отрисовки окна статистики
 window.renderStatistics = function (ctx, names, times) {
   ctx.fillStyle = shadow.color;
   ctx.fillRect(shadow.x, shadow.y, shadow.width, shadow.height);
@@ -66,13 +67,13 @@ window.renderStatistics = function (ctx, names, times) {
 
   var step = histogram.height / getMaxTime(times);
 
-  for (var i = 0; i < times.length; i++) {
+  times.forEach(function (item, i) {
     ctx.fillStyle = (names[i] === histogram.yourBarName) ? histogram.yourBarColor : histogram.othersBarColor + Math.random() + ')';
-    ctx.fillRect(histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - times[i] * step), histogram.barWidth, times[i] * step);
+    ctx.fillRect(histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - item * step), histogram.barWidth, item * step);
     ctx.fillStyle = text.color;
     ctx.textBaseline = text.wordsBaseline;
     ctx.fillText(names[i], histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + histogram.height + text.indent);
     ctx.textBaseline = text.numbersBaseline;
-    ctx.fillText(Math.round(times[i]), histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - times[i] * step) - text.indent);
-  }
+    ctx.fillText(Math.round(item), histogram.x + (histogram.barWidth + histogram.barIndent) * i, histogram.y + (histogram.height - item * step) - text.indent);
+  });
 };
